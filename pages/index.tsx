@@ -3,11 +3,11 @@ import { useState } from 'react'
 import Head from 'next/head'
 
 
-import { GetFile } from './handlers/getFile/getFile'
-import { FileHandler } from './handlers/handleFiles/fileHandler'
+import { GetFile } from '../components/getFile'
+import { FileHandler } from '../components/fileHandler'
 
 const Home: NextPage = () => {
-  const [fileOut, setFileOut] = useState<File>(null);
+  const [fileOut, setFileOut] = useState<any>();
 
 
   return (
@@ -16,7 +16,14 @@ const Home: NextPage = () => {
         <title>Count It! v4.0</title>
       </Head>
 
+      {/* {fileOut ? <FileHandler fileOut={fileOut} fileOutHandler={setFileOut} /> : <GetFile fileOut={fileOut} fileOutHandler={setFileOut} />} */}
+      {/* Typescript doesnt like the line above so we have to re-write it to be type safe */}
+
       {fileOut ? <FileHandler fileOut={fileOut} fileOutHandler={setFileOut} /> : <GetFile fileOut={fileOut} fileOutHandler={setFileOut} />}
+
+
+
+
     </>
 
   )

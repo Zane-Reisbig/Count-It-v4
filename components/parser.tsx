@@ -65,7 +65,7 @@ export function getUniqueValuesFromHeader(cell: Cell, rows: Row[]): Cell[] {
 
 export function countRepeatedValues(colNumber: number, fileRows: Row[]): Object {
 
-    let count: Object = {};
+    let count: any = {};
 
     for (let i = 0; i < fileRows.length; i++) {
         let row = fileRows[i];
@@ -88,9 +88,9 @@ export function countRepeatedValues(colNumber: number, fileRows: Row[]): Object 
 
 }
 
-export function generateReport(params, fileRows: Row[]): object {
+export function generateReport(params: any, fileRows: Row[]): object {
 
-    let finalReport = {
+    let finalReport: any = {
         "finalRows": [],
         "overreadRows": []
     }
@@ -148,7 +148,7 @@ export function generateReport(params, fileRows: Row[]): object {
         let currentCell = userRows[i][paramLocations["Test Date/Time"]];
 
         if (currentCell != null) {
-            let date = new Date(currentCell);
+            let date = new Date(currentCell as string);
 
             if (params["Start Date"] != "" && params["End Date"] != "") {
 
@@ -268,8 +268,8 @@ export function generateReport(params, fileRows: Row[]): object {
         }
     }
 
-    let finalCountRolled = {};
-    let associationTotalRolled = {};
+    let finalCountRolled: any = {};
+    let associationTotalRolled: any = {};
 
     for (let i = 0; i < countedObjects.length; i++) {
         let item = countedObjects[i]["finalCount"];

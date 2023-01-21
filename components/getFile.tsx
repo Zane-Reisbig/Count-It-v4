@@ -13,8 +13,8 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
   function listFiles(files: FileList, sender: any = null) {
     sender ? sender.preventDefault() : null;
 
-    const fileLabelHandle = document.getElementById('fileLabel');
-    const continueButtonHandle = document.getElementById('continueButton');
+    const fileLabelHandle = document.getElementById('fileLabel') as HTMLLabelElement;
+    const continueButtonHandle = document.getElementById('continueButton') as HTMLButtonElement;
     fileLabelHandle.innerText = "Click Me!\n";
 
     let varFilename = files[0] ? files[0].name : "No File Selected";
@@ -70,7 +70,7 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
           <div
             onDrop={(e) => listFiles(e.dataTransfer.files, e)}
             onDragOver={(e) => e.preventDefault()}
-            onClick={(e) => document.getElementById('fileLabel').click()}
+            onClick={(e) => document.getElementById('fileLabel')!.click()}
             className={`
               fileSelectButtonContainer
               
@@ -99,7 +99,9 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
               id="file"
               name="file"
               accept=".csv,.xlsx,.xls"
-              onChange={(e) => listFiles(e.target.files)}
+              onChange={(e) =>
+                listFiles(e.target.files!, e)
+              }
             />
           </div>
 

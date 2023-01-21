@@ -1,25 +1,8 @@
+
 import words from "./words";
 
-interface IOverReadParser {
-    finalCount: [
-        {
-            word: string;
-            count: number;
-            assoc: string;
-        }
-    ]
-    associationTotals: [
-        {
-            assoc: string;
-            count: number;
-        }
-    ]
 
-
-}
-
-
-export default function splitFirst(string): IOverReadParser {
+export default function splitFirst(string) {
     // Splits the TextArea at new lines and removes whitespace
     // Calls the countRepeats method
 
@@ -32,8 +15,8 @@ export default function splitFirst(string): IOverReadParser {
     return countRepeats(myArray);
 }
 
-function countRepeats(array): IOverReadParser {
- 
+function countRepeats(array) {
+
     // Counts the number of times a word is repeated in the second split textarea
     let finalCount = [];
     const items = array.split("\n");

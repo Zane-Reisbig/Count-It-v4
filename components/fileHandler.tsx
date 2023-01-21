@@ -78,18 +78,18 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             "Subject Number": "",
             "Start Date": "",
             "End Date": ""
-        };
+        } as any;
 
         // Get Params for search
         for (let key in params) {
             if (key == "Start Date" || key == "End Date") {
                 let input = document.getElementById(key) as HTMLInputElement;
-                params[key] = input.value;
+                params[key] = input.value as any;
                 continue;
             }
             else {
                 let select = document.getElementById(key + "List") as HTMLSelectElement;
-                params[key] = select.value;
+                params[key] = select.value as any;
                 continue;
             }
         }
@@ -101,7 +101,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             }
         }
 
-        let returnedRows = generateReport(params, fileRows);
+        let returnedRows: any = generateReport(params, fileRows);
         let fileName = new Date().toISOString() + ".csv";
 
 
@@ -128,7 +128,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
 
         let generatedContentRoot = document.getElementById("generatedContentRoot");
-        generatedContentRoot.innerHTML = "";
+        generatedContentRoot!.innerHTML = "";
 
         for (let i = 0; i < myHeaders.length; i++) {
             let decodedHeader = myHeaders[i];
@@ -174,7 +174,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             div.appendChild(select);
             div.appendChild(resetButton);
 
-            generatedContentRoot.appendChild(div);
+            generatedContentRoot!.appendChild(div);
 
         }
     }
