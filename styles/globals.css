@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #202124;
+}
+
+body {
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: bold;
+}
+
+input[type="file"] {
+  display: none;
+}
