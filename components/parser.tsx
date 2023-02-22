@@ -291,13 +291,13 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
     wordCountObject = createRepeatsObject(splitArray, wordCountObject);
 
     // Sort the object by count
-    const wordCountsSorted: Array<[string, number]> = [];
+    let wordCountsSorted: Array<[string, number]> = [];
     for (const word in wordCountObject) {
         if (word === "" || word === " ") { continue; }
         wordCountsSorted.push([word, wordCountObject[word]]);
     }
 
-    wordCountsSorted.sort((a, b) => b[1] - a[1]);
+    wordCountsSorted = wordCountsSorted.sort((a, b) => b[1] - a[1]);
 
     let associationArray = [];
     associationArray = makeAssociations(words(), wordCountsSorted)
