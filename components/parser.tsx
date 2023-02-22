@@ -297,6 +297,7 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         wordCountsSorted.push([word, wordCountObject[word]]);
     }
 
+    wordCountsSorted.sort((a, b) => b[1] - a[1]);
 
     let associationArray = [];
     associationArray = makeAssociations(words(), wordCountsSorted)
