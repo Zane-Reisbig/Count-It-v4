@@ -1,10 +1,9 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 
 import readXlsxFile, { Row } from 'read-excel-file'
 import { getDataFromHeader, getUniqueValuesFromHeader, generateReport, downloadFile } from './parser';
-
 
 import styles from './handleFiles.module.css'
 
@@ -13,34 +12,56 @@ interface FileHandlerProps {
     fileOutHandler: (file: File) => void;
 }
 
+interface paramObject {
+    "Performed by": string;
+    "Country": string;
+    "Site Number": string;
+    "Subject Number": string;
+}
+
 export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     const router = useRouter();
 
     const [fileRows, setFileRows] = useState<Row[]>([]);
     const [decodedHeaders, setDecodedHeaders] = useState<any[]>([]);
-    const [searchParams, setSearchParams] = useState<any[]>([]);
+    const [currentReport, setCurrentReport] = useState<any[]>([]);
 
 
     useEffect(() => {
-        // console.log("Starting Processing...")
-
+        // This useEffect is executed only once when the component is mounted.
+        // It reads the data from the fileOut provided via props and sets the read data in the state variable fileRows.
         const reader = async () => await readXlsxFile(props.fileOut)
             .then(async (rows) => {
                 await setFileRows(rows);
             })
         reader();
-
     }, [])
 
     useEffect(() => {
-
+        // This useEffect is executed whenever fileRows change.
+        // It searches for the header row in the fileRows and then extracts the data from the fileRows for each header column.
+        // The extracted data is stored in decodedHeaders state variable.
         if (fileRows.length == 0) {
             return;
         }
 
-        let headerRow = fileRows[10];
-        let headerRowLength = headerRow.length;
+        let headerRow: Row;
+        let headerRowLength: number;
+        for (let i = 0; i < fileRows.length; i++) {
+            let row = fileRows[i];
+            let rowLength = row.length;
+
+            for (let j = 0; j < rowLength; j++) {
+                let cell = row[j];
+
+                if (cell == "Country") {
+                    headerRow = row;
+                    headerRowLength = rowLength;
+                    break;
+                }
+            }
+        }
 
         let decodedHeaders: any[] = [];
 
@@ -60,59 +81,91 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     }, [fileRows])
 
-
     useEffect(() => {
+        // This useEffect is executed whenever decodedHeaders change.
+        // It calls the generateControls() function.
         generateControls();
-
     }, [decodedHeaders])
 
+    useEffect(() => {
+        // This useEffect is executed whenever currentReport change.
+        // It calls the displayReport() function.
+        displayReport();
+    }, [currentReport])
 
-    function generateParams() {
+    function internalDownload() {
+        // This function is called when the Download button in the generated report is clicked.
+        // It takes the data from the current report and downloads it as a CSV file.
+        let returnedRows = currentReport[0];
+        let fileName = new Date().toISOString() + ".csv";
+        downloadFile(returnedRows["csv"], fileName, "text");
+    }
 
-        let reportOutputHandle = document.getElementById("reportOutput") as HTMLInputElement;
+    async function displayReport() {
+        try {
 
-        let params = {
+
+            let reportOutputHandle = document.getElementById("reportOutput") as HTMLDivElement;
+            reportOutputHandle.innerHTML = "";
+
+            let reportOutputDiv = document.createElement("div");
+
+            let reportTextArea = document.createElement("textarea");
+            reportTextArea.className = "w-full h-96 text-black rounded-md ";
+            reportTextArea.value = currentReport[0]["csv"];
+            reportTextArea.spellcheck = false;
+            reportTextArea.readOnly = true;
+
+            let reportDownloadButton = document.createElement("button");
+            reportDownloadButton.className = `rounded text-black bg-white mt-4 mx-auto rounded-lg w-36 h-12 transition-all duration-300 ease-in-out active:bg-zinc-50 active:scale-95 `;
+            reportDownloadButton.className += ` m-3 `;
+
+            reportDownloadButton.innerText = "Download";
+            reportDownloadButton.onclick = () => {
+                internalDownload();
+            };
+
+            reportOutputDiv.appendChild(reportDownloadButton);
+            reportOutputDiv.appendChild(reportTextArea);
+            reportOutputHandle.appendChild(reportOutputDiv);
+
+            let reportPopUpHandle = document.getElementById("reportGeneratedPopup") as HTMLDivElement;
+            for (let i = 0; i < 100; i++) {
+                setTimeout((x) => { reportPopUpHandle.style.opacity = (i / 100).toString(); }, 10 * i, i);
+            }
+
+        } catch (error) {
+            console.error("Failed to load report['csv']")
+            console.error(error);
+        }
+
+    }
+
+    async function generateParams() {
+        let generatedIds = ["Performed by", "Country", "Site Number", "Subject Number"];
+
+        let searchOn: paramObject = {
             "Performed by": "",
             "Country": "",
             "Site Number": "",
-            "Subject Number": "",
-            "Start Date": "",
-            "End Date": ""
-        } as any;
+            "Subject Number": ""
+        };
 
-        // Get Params for search
-        for (let key in params) {
-            if (key == "Start Date" || key == "End Date") {
-                let input = document.getElementById(key) as HTMLInputElement;
-                params[key] = input.value as any;
-                continue;
-            }
-            else {
-                let select = document.getElementById(key + "List") as HTMLSelectElement;
-                params[key] = select.value as any;
-                continue;
-            }
-        }
+        generatedIds.forEach((id) => {
+            let select = document.getElementById(id + "List") as HTMLSelectElement;
+            let value = select.value;
 
-        // Remove Unset
-        for (let key in params) {
-            if (params[key] == key) {
-                params[key] = "";
-            }
-        }
+            searchOn[`${id}`] = value;
+        })
 
-        let returnedRows: any = generateReport(params, fileRows);
-        let fileName = new Date().toISOString() + ".csv";
+        console.log(searchOn);
 
-
-        reportOutputHandle.value = "Report Generated: " + fileName + " -> ";
-        reportOutputHandle.value += "Returned: " + returnedRows["rowCount"] + " Rows";
-
-        downloadFile(returnedRows["csv"], fileName, "text");
+        await setCurrentReport([generateReport(searchOn, fileRows)]);
 
     }
 
     function generateControls() {
+
         let neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number"];
         let myHeaders = [];
 
@@ -126,9 +179,14 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             }
         }
 
-
         let generatedContentRoot = document.getElementById("generatedContentRoot");
         generatedContentRoot!.innerHTML = "";
+
+        let loadingMessageHandle = document.createElement("h1") as HTMLHeadingElement;
+        loadingMessageHandle.className = "text-2xl text-center";
+        loadingMessageHandle.innerText = "Loading Data 🔁";
+
+        generatedContentRoot!.appendChild(loadingMessageHandle);
 
         for (let i = 0; i < myHeaders.length; i++) {
             let decodedHeader = myHeaders[i];
@@ -146,8 +204,12 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             select.id = decodedHeader.header + "List";
             select.className = "mt-1 rounded w-60 text-black";
 
+            let blankOption = document.createElement("option")
+            blankOption.value = "";
+            select.appendChild(blankOption);
+
             let countryCheck = false;
-            for (let j = 0; j < decodedHeader.uniqueValues.length; j++) {
+            for (let j = 1; j < decodedHeader.uniqueValues.length; j++) {
 
                 if (decodedHeader.header == "Country" && countryCheck == false) {
                     j += 7;
@@ -171,12 +233,14 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                 select.selectedIndex = 0;
             };
 
+            loadingMessageHandle.remove();
             div.appendChild(select);
             div.appendChild(resetButton);
 
             generatedContentRoot!.appendChild(div);
 
         }
+
     }
 
     return (
@@ -214,6 +278,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             <div></div>
             <div></div>
             <div id="generatedContentRoot">
+                <h1 id="loadingMessage">Loading Data 🔁</h1>
                 {/* Template for html elements */}
                 {/* <div className={`m-3`}>
                         <p className={`ml-5 text-2xl text-white`}>$``:</p>
@@ -222,66 +287,13 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                             id="$``List"
                             className={`mt-1 rounded`}
                         >Choose $``</select>
-                    </div> 
+                    </div>
                 */}
             </div>
 
             <div />
             <div />
 
-            <div className='m-3'>
-                <div className="grid grid-cols-2 grid-rows-4 w-full h-full">
-
-                    <div>
-                        <p className='text-2xl '>Start Date:</p>
-                        <button
-                            className={`rounded text-white block`}
-                            onClick={() => {
-                                let input = document.getElementById("Start Date") as HTMLInputElement;
-                                input.value = "";
-                            }}
-                        >Reset</button>
-                    </div>
-                    <input
-                        type="date"
-                        name="startDate"
-                        id="Start Date"
-                        className={`
-                            inline
-                            h-1/2
-                            text-black
-                            rounded
-                        `} />
-
-                    <div>
-                        <p className='text-2xl '>End Date:</p>
-                        <button
-                            className={`rounded text-white block`}
-                            onClick={() => {
-                                let input = document.getElementById("End Date") as HTMLInputElement;
-                                input.value = "";
-                            }}
-                        >Reset</button>
-                    </div>
-                    <input
-                        type="date"
-                        name="endDate"
-                        id="End Date"
-                        className={`
-                            inline
-                            h-1/2
-                            text-black
-                            rounded
-                        `} />
-
-
-                </div>
-
-
-
-            </div>
-
-            <div />
 
             <div className={`m-3 grid grid-rows-5 grid-cols-5`}>
                 <div>
@@ -304,19 +316,28 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                     >Run Report</button>
                 </div>
 
-                <div />
-                <div />
-                <div />
-                <div />
-
             </div>
 
             <div>
-                <input
-                    disabled
-                    className={styles.reportOutput}
-                    id="reportOutput"
-                ></input>
+                <div className='mt-[80%] opacity-0' id="reportGeneratedPopup">
+                    <h1
+                        className={`
+                            text-center
+                        `}
+                    >Report Generated</h1>
+                    <h1
+                        className={`
+                            text-center
+                        `}
+                    >👇</h1>
+                </div>
+
+            </div>
+
+            <div />
+
+
+            <div id="reportOutput" className=' col-span-3 p-3 '>
             </div>
         </div>
     )

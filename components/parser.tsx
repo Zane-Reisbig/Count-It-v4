@@ -1,8 +1,17 @@
-import { debug } from "console";
 import { Row } from "read-excel-file";
 import { Cell } from "read-excel-file/types";
 
-import splitFirst from "./overReadParser";
+// import splitFirst from "./overReadParser";
+import { textCleaner, createRepeatsObject, makeAssociations } from "./textHandling";
+import words from "./words";
+
+interface paramObject {
+    "Performed by": string;
+    "Country": string;
+    "Site Number": string;
+    "Subject Number": string;
+}
+
 
 export function getDataFromHeader(cell: Cell, rows: Row[]): Cell[] {
 
@@ -88,7 +97,7 @@ export function countRepeatedValues(colNumber: number, fileRows: Row[]): Object 
 
 }
 
-export function generateReport(params: any, fileRows: Row[]): object {
+export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
     let finalReport: any = {
         "finalRows": [],
@@ -96,7 +105,12 @@ export function generateReport(params: any, fileRows: Row[]): object {
     }
 
     let paramLocations = {
-        ...params,
+        "Performed by": "",
+        "Country": "",
+        "Site Number": "",
+        "Subject Number": "",
+        "Start Date": "",
+        "End Date": "",
         "Test Date/Time": 0,
         "Overread Selection Reason": 0
     }
@@ -120,6 +134,7 @@ export function generateReport(params: any, fileRows: Row[]): object {
 
 
     //Header Row is 10
+    //^ this is no longer always true. the header row is variable
     //fileRows[r][c] - r = row, c = column
 
     // console.log(paramLocations);
@@ -130,85 +145,85 @@ export function generateReport(params: any, fileRows: Row[]): object {
         let currentCell = fileRows[i][paramLocations["Performed by"]];
 
         if (currentCell != null) {
-            if (params["Performed by"] != "") {
-                if (currentCell == params["Performed by"]) {
+            if (paramLocations["Performed by"] != "") {
+                if (currentCell == searchOn["Performed by"]) {
                     userRows.push(fileRows[i]);
                 }
             }
 
-            if (params["Performed by"] == "") {
+            if (searchOn["Performed by"] == "") {
                 userRows.push(fileRows[i]);
             }
         }
     }
 
-    let dateRows = [];
+    // let dateRows = [];
 
-    for (let i = 0; i < userRows.length; i++) {
-        let currentCell = userRows[i][paramLocations["Test Date/Time"]];
+    // for (let i = 0; i < userRows.length; i++) {
+    //     let currentCell = userRows[i][paramLocations["Test Date/Time"]];
 
-        if (currentCell != null) {
-            let date = new Date(currentCell as string);
+    //     if (currentCell != null) {
+    //         let date = new Date(currentCell as string);
 
-            if (params["Start Date"] != "" && params["End Date"] != "") {
+    //         if (searchOn["Start Date"] != "" && searchOn["End Date"] != "") {
 
-                let startDate = new Date(params["Start Date"]);
-                let endDate = new Date(params["End Date"]);
+    //             let startDate = new Date(searchOn["Start Date"]);
+    //             let endDate = new Date(searchOn["End Date"]);
 
-                if (date >= startDate && date <= endDate) {
-                    dateRows.push(userRows[i]);
-                }
-            }
+    //             if (date >= startDate && date <= endDate) {
+    //                 dateRows.push(userRows[i]);
+    //             }
+    //         }
 
-            if (params["Start Date"] == "") {
-                if (params["End Date"] == "") {
-                    dateRows.push(userRows[i]);
-                    continue;
-                }
+    //         if (searchOn["Start Date"] == "") {
+    //             if (searchOn["End Date"] == "") {
+    //                 dateRows.push(userRows[i]);
+    //                 continue;
+    //             }
 
-                let endDate = new Date(params["End Date"]);
+    //             let endDate = new Date(searchOn["End Date"]);
 
-                if (date <= endDate) {
-                    dateRows.push(userRows[i]);
-                }
+    //             if (date <= endDate) {
+    //                 dateRows.push(userRows[i]);
+    //             }
 
-                continue;
-            }
+    //             continue;
+    //         }
 
-            if (params["End Date"] == "") {
-                if (params["Start Date"] == "") {
-                    dateRows.push(userRows[i]);
-                    continue;
-                }
+    //         if (searchOn["End Date"] == "") {
+    //             if (searchOn["Start Date"] == "") {
+    //                 dateRows.push(userRows[i]);
+    //                 continue;
+    //             }
 
-                let startDate = new Date(params["Start Date"]);
+    //             let startDate = new Date(searchOn["Start Date"]);
 
-                if (date >= startDate) {
-                    dateRows.push(userRows[i]);
-                }
+    //             if (date >= startDate) {
+    //                 dateRows.push(userRows[i]);
+    //             }
 
-                continue;
-            }
+    //             continue;
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
     let siteNumberRows = [];
 
-    for (let i = 0; i < dateRows.length; i++) {
-        let currentCell = dateRows[i][paramLocations["Site Number"]];
+    for (let i = 0; i < userRows.length; i++) {
+        let currentCell = userRows[i][paramLocations["Site Number"]];
 
         if (currentCell != null) {
-            if (params["Site Number"] != "") {
+            if (searchOn["Site Number"] != "") {
 
-                if (currentCell == params["Site Number"]) {
-                    siteNumberRows.push(dateRows[i]);
+                if (currentCell == searchOn["Site Number"]) {
+                    siteNumberRows.push(userRows[i]);
                 }
             }
 
-            if (params["Site Number"] == "") {
+            if (searchOn["Site Number"] == "") {
 
-                siteNumberRows.push(dateRows[i]);
+                siteNumberRows.push(userRows[i]);
             }
         }
     }
@@ -219,14 +234,14 @@ export function generateReport(params: any, fileRows: Row[]): object {
         let currentCell = siteNumberRows[i][paramLocations["Country"]];
 
         if (currentCell != null) {
-            if (params["Country"] != "") {
+            if (searchOn["Country"] != "") {
 
-                if (currentCell == params["Country"]) {
+                if (currentCell == searchOn["Country"]) {
                     countryRows.push(siteNumberRows[i]);
                 }
             }
 
-            if (params["Country"] == "") {
+            if (searchOn["Country"] == "") {
 
                 countryRows.push(siteNumberRows[i]);
             }
@@ -239,14 +254,14 @@ export function generateReport(params: any, fileRows: Row[]): object {
         let currentCell = countryRows[i][paramLocations["Subject Number"]];
 
         if (currentCell != null) {
-            if (params["Subject Number"] != "") {
+            if (searchOn["Subject Number"] != "") {
 
-                if (currentCell == params["Subject Number"]) {
+                if (currentCell == searchOn["Subject Number"]) {
                     subjectNumberRows.push(countryRows[i]);
                 }
             }
 
-            if (params["Subject Number"] == "") {
+            if (searchOn["Subject Number"] == "") {
 
                 subjectNumberRows.push(countryRows[i]);
             }
@@ -256,82 +271,66 @@ export function generateReport(params: any, fileRows: Row[]): object {
 
 
 
-    let countedObjects = [];
+    let splitArray = [];
 
     for (let i = 0; i < countryRows.length; i++) {
-        // debugger;
 
         let currentCell = countryRows[i][paramLocations["Overread Selection Reason"]];
 
         if (currentCell != null) {
-            countedObjects.push(splitFirst(currentCell));
+            splitArray.push(textCleaner(currentCell));
         }
     }
 
-    let finalCountRolled: any = {};
-    let associationTotalRolled: any = {};
+    let wordCountObject = {};
+    wordCountObject = createRepeatsObject(splitArray, wordCountObject);
 
-    for (let i = 0; i < countedObjects.length; i++) {
-        let item = countedObjects[i]["finalCount"];
-
-        for (let j = 0; j < item.length; j++) {
-            if (finalCountRolled[item[j]["word"]] == null) {
-                finalCountRolled[item[j]["word"]] = { count: item[j]["count"], assoc: item[j]["assoc"] }
-            }
-            else {
-                finalCountRolled[item[j]["word"]]["count"] += item[j]["count"];
-            }
-        }
+    // Sort the object by count
+    let wordCountsSorted = [];
+    for (let word in wordCountObject) {
+        if (word === "" || word === " ") { continue; }
+        wordCountsSorted.push([word, wordCountObject[word]]);
     }
 
-    for (let i = 0; i < countedObjects.length; i++) {
-        let item = countedObjects[i]["associationTotals"];
+    wordCountsSorted.sort(function (a, b) {
+        return b[1] - a[1];
+    });
 
-        for (let j = 0; j < item.length; j++) {
-            if (associationTotalRolled[item[j]["assoc"]] == null) {
-                associationTotalRolled[item[j]["assoc"]] = { count: item[j]["count"], assoc: item[j]["assoc"] }
-            }
-            else {
-                associationTotalRolled[item[j]["assoc"]]["count"] += item[j]["count"];
-            }
-        }
-    }
+    let associationArray = [];
+    associationArray = makeAssociations(words(), wordCountsSorted)
 
-    finalReport["finalRows"] = subjectNumberRows;
-    finalReport["overreadRows"].push(finalCountRolled);
-    finalReport["overreadRows"].push(associationTotalRolled);
-
-    // Convert final report to CSV
     const delimiter = ";";
     let csv = "";
-    params["Performed by"] = params["Performed by"] == "" ? "All" : params["Performed by"];
-    params["Start Date"] = params["Start Date"] == "" ? "All Time" : params["Start Date"];
-    params["End Date"] = params["End Date"] == "" ? "All Time" : params["End Date"];
-    params["Site Number"] = params["Site Number"] == "" ? "All" : params["Site Number"];
-    params["Country"] = params["Country"] == "" ? "All" : params["Country"];
-    params["Subject Number"] = params["Subject Number"] == "" ? "All" : params["Subject Number"];
+    searchOn["Performed by"] = searchOn["Performed by"] == "" ? "All" : searchOn["Performed by"];
+    // searchOn["Start Date"] = searchOn["Start Date"] == ""  ? "All Time" : searchOn["Start Date"];
+    // searchOn["End Date"] = searchOn["End Date"] == "" ? "All Time" : searchOn["End Date"];
+    searchOn["Start Date"] = "All Time";
+    searchOn["End Date"] = "All Time";
+    searchOn["Site Number"] = searchOn["Site Number"] == "" ? "All" : searchOn["Site Number"];
+    searchOn["Country"] = searchOn["Country"] == "" ? "All" : searchOn["Country"];
+    searchOn["Subject Number"] = searchOn["Subject Number"] == "" ? "All" : searchOn["Subject Number"];
 
 
-    csv += `Performed by${delimiter}${params["Performed by"]}\n`;
-    csv += `Start Date${delimiter}${params["Start Date"]}\n`;
-    csv += `End Date${delimiter}${params["End Date"]}\n`;
-    csv += `Site Number${delimiter}${params["Site Number"]}\n`;
-    csv += `Country${delimiter}${params["Country"]}\n`;
-    csv += `Subject Number${delimiter}${params["Subject Number"]}\n`;
+    csv += `Performed by${delimiter}${searchOn["Performed by"]}\n`;
+    csv += `Start Date${delimiter}${searchOn["Start Date"]}\n`;
+    csv += `End Date${delimiter}${searchOn["End Date"]}\n`;
+    csv += `Site Number${delimiter}${searchOn["Site Number"]}\n`;
+    csv += `Country${delimiter}${searchOn["Country"]}\n`;
+    csv += `Subject Number${delimiter}${searchOn["Subject Number"]}\n`;
+
 
     csv += "\r\n".repeat(2);
-
-    Array.from(Object.keys(finalReport["overreadRows"][1])).forEach((key, index) => {
-        csv += `${key}${delimiter}${finalReport["overreadRows"][1][key]["count"]}\n`;
+    associationArray.forEach((key, index) => {
+        csv += `${key[0]}${delimiter}${key[1]}\n`;
     });
 
     csv += "\r\n".repeat(2);
-
-    Array.from(Object.keys(finalReport["overreadRows"][0])).forEach((key, index) => {
-        csv += `${key}${delimiter}${finalReport["overreadRows"][0][key]["count"]}\n`;
+    wordCountsSorted.forEach((key, index) => {
+        csv += `${key[0]}${delimiter}${key[1]}\n`;
     });
 
-    return { csv: csv, rowCount: Object.keys(finalReport["overreadRows"][0]).length };
+    console.log(csv);
+    return { csv: csv, rowCount: associationArray.length };
 
 }
 

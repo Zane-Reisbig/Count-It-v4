@@ -1,4 +1,4 @@
-export default function words() {
+export default function words(): Array<{ word: string; assoc: string }> {
   return [
     {
       word: "Poor subject effort (FEV1 and FVC)",
