@@ -13,6 +13,7 @@ interface FileHandlerProps {
 }
 
 interface paramObject {
+    [key: string]: string;
     "Performed by": string;
     "Country": string;
     "Site Number": string;
@@ -46,8 +47,8 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             return;
         }
 
-        let headerRow: Row;
-        let headerRowLength: number;
+        let headerRow: Row = [];
+        let headerRowLength: number = 0;
         for (let i = 0; i < fileRows.length; i++) {
             let row = fileRows[i];
             let rowLength = row.length;

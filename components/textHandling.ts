@@ -31,9 +31,13 @@ export function createRepeatsObject(array:Array<Array<string>>, currentObject: a
 export function makeAssociations(
     assocObjArray: Array<{ word: string, assoc: string }>,
     checkWordAndCountArray: Array<[string, number]>
-): Array<[string, number]> {
+): any {
 
-    let internalObject = {};
+    interface interalObInterface {
+        [key: string]: number;
+    }
+
+    let internalObject: interalObInterface = {};
     let internalArray = [];
     
     checkWordAndCountArray.forEach((item) => {

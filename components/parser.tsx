@@ -6,6 +6,8 @@ import { textCleaner, createRepeatsObject, makeAssociations } from "./textHandli
 import words from "./words";
 
 interface paramObject {
+    [key: string]: string;
+
     "Performed by": string;
     "Country": string;
     "Site Number": string;
@@ -98,24 +100,30 @@ export function countRepeatedValues(colNumber: number, fileRows: Row[]): Object 
 }
 
 export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
+    interface paramLInterface {
+        [key: string]: number;
+        "Performed by": number;
+        "Country": number;
+        "Site Number": number;
+        "Subject Number": number;
+        "Test Date/Time": number;
+        "Overread Selection Reason": number;
+    }
+
 
     let finalReport: any = {
         "finalRows": [],
         "overreadRows": []
     }
 
-    let paramLocations = {
-        "Performed by": "",
-        "Country": "",
-        "Site Number": "",
-        "Subject Number": "",
-        "Start Date": "",
-        "End Date": "",
+    let paramLocations: paramLInterface = {
+        "Performed by": 0,
+        "Country": 0,
+        "Site Number": 0,
+        "Subject Number": 0,
         "Test Date/Time": 0,
         "Overread Selection Reason": 0
     }
-    delete paramLocations["End Date"]
-    delete paramLocations["Start Date"]
 
     let paramKeys = Object.keys(paramLocations);
 
@@ -145,7 +153,7 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         let currentCell = fileRows[i][paramLocations["Performed by"]];
 
         if (currentCell != null) {
-            if (paramLocations["Performed by"] != "") {
+            if (searchOn["Performed by"] != "") {
                 if (currentCell == searchOn["Performed by"]) {
                     userRows.push(fileRows[i]);
                 }
@@ -278,23 +286,23 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         let currentCell = countryRows[i][paramLocations["Overread Selection Reason"]];
 
         if (currentCell != null) {
-            splitArray.push(textCleaner(currentCell));
+            splitArray.push(textCleaner(currentCell as string));
         }
     }
 
-    let wordCountObject = {};
+    interface wcoInterface {
+        [key: string]: number;
+    }
+    let wordCountObject: wcoInterface = {};
     wordCountObject = createRepeatsObject(splitArray, wordCountObject);
 
     // Sort the object by count
-    let wordCountsSorted = [];
+    let wordCountsSorted: Array<[string, number]> = [];
     for (let word in wordCountObject) {
         if (word === "" || word === " ") { continue; }
         wordCountsSorted.push([word, wordCountObject[word]]);
     }
 
-    wordCountsSorted.sort(function (a, b) {
-        return b[1] - a[1];
-    });
 
     let associationArray = [];
     associationArray = makeAssociations(words(), wordCountsSorted)
@@ -320,7 +328,7 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
 
     csv += "\r\n".repeat(2);
-    associationArray.forEach((key, index) => {
+    associationArray.forEach((key: string, index: number) => {
         csv += `${key[0]}${delimiter}${key[1]}\n`;
     });
 

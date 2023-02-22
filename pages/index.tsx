@@ -14,6 +14,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>Count It! v4.0</title>
+        <link rel="icon" href="favicon.ico" />
       </Head>
 
       {/* {fileOut ? <FileHandler fileOut={fileOut} fileOutHandler={setFileOut} /> : <GetFile fileOut={fileOut} fileOutHandler={setFileOut} />} */}
