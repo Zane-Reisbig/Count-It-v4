@@ -2,8 +2,8 @@ export function textCleaner(text: string): Array<string> {
 // Example:
 // "Poor start of effort, late time to peak flow (FEV1); Maneuver was not started from TLC, FIVC is greater than FVC (FEV1 and FVC).; Maneuver was not started from TLC, FIVC is greater than FVC (FEV1 and FVC)."
 
-    let splitText = text.split(';');
-    let cleanText = splitText.map((item) => {
+    const splitText = text.split(';');
+    const cleanText = splitText.map((item) => {
         return item.trim();
     });
 
@@ -11,7 +11,7 @@ export function textCleaner(text: string): Array<string> {
 }
 
 export function createRepeatsObject(array:Array<Array<string>>, currentObject: any): any {
-    let internalOb = currentObject;
+    const internalOb = currentObject;
 
     array.forEach((item) => {
         item.forEach((subItem) => {
@@ -37,8 +37,8 @@ export function makeAssociations(
         [key: string]: number;
     }
 
-    let internalObject: interalObInterface = {};
-    let internalArray = [];
+    const internalObject: interalObInterface = {};
+    const internalArray = [];
     
     checkWordAndCountArray.forEach((item) => {
         let assocFound = false;
@@ -63,7 +63,7 @@ export function makeAssociations(
         }
     });
 
-    for (let key in internalObject) {
+    for (const key in internalObject) {
         internalArray.push([key, internalObject[key]]);
     }
 

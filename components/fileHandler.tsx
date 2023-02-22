@@ -1,6 +1,8 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { useState, useEffect, Suspense } from 'react'
+
+import { useState, useEffect } from 'react'
+import React from 'react';
 
 import readXlsxFile, { Row } from 'read-excel-file'
 import { getDataFromHeader, getUniqueValuesFromHeader, generateReport, downloadFile } from './parser';
@@ -48,13 +50,13 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
         }
 
         let headerRow: Row = [];
-        let headerRowLength: number = 0;
+        let headerRowLength = 0;
         for (let i = 0; i < fileRows.length; i++) {
-            let row = fileRows[i];
-            let rowLength = row.length;
+            const row = fileRows[i];
+            const rowLength = row.length;
 
             for (let j = 0; j < rowLength; j++) {
-                let cell = row[j];
+                const cell = row[j];
 
                 if (cell == "Country") {
                     headerRow = row;
@@ -64,12 +66,12 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             }
         }
 
-        let decodedHeaders: any[] = [];
+        const decodedHeaders: any[] = [];
 
         for (let i = 0; i < headerRowLength; i++) {
-            let header = headerRow[i];
-            let uniqueValues = getUniqueValuesFromHeader(header, fileRows);
-            let data = getDataFromHeader(header, fileRows);
+            const header = headerRow[i];
+            const uniqueValues = getUniqueValuesFromHeader(header, fileRows);
+            const data = getDataFromHeader(header, fileRows);
 
             decodedHeaders.push({
                 header: header,
@@ -97,8 +99,8 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
     function internalDownload() {
         // This function is called when the Download button in the generated report is clicked.
         // It takes the data from the current report and downloads it as a CSV file.
-        let returnedRows = currentReport[0];
-        let fileName = new Date().toISOString() + ".csv";
+        const returnedRows = currentReport[0];
+        const fileName = new Date().toISOString() + ".csv";
         downloadFile(returnedRows["csv"], fileName, "text");
     }
 
@@ -106,18 +108,18 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
         try {
 
 
-            let reportOutputHandle = document.getElementById("reportOutput") as HTMLDivElement;
+            const reportOutputHandle = document.getElementById("reportOutput") as HTMLDivElement;
             reportOutputHandle.innerHTML = "";
 
-            let reportOutputDiv = document.createElement("div");
+            const reportOutputDiv = document.createElement("div");
 
-            let reportTextArea = document.createElement("textarea");
+            const reportTextArea = document.createElement("textarea");
             reportTextArea.className = "w-full h-96 text-black rounded-md ";
             reportTextArea.value = currentReport[0]["csv"];
             reportTextArea.spellcheck = false;
             reportTextArea.readOnly = true;
 
-            let reportDownloadButton = document.createElement("button");
+            const reportDownloadButton = document.createElement("button");
             reportDownloadButton.className = `rounded text-black bg-white mt-4 mx-auto rounded-lg w-36 h-12 transition-all duration-300 ease-in-out active:bg-zinc-50 active:scale-95 `;
             reportDownloadButton.className += ` m-3 `;
 
@@ -130,9 +132,9 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             reportOutputDiv.appendChild(reportTextArea);
             reportOutputHandle.appendChild(reportOutputDiv);
 
-            let reportPopUpHandle = document.getElementById("reportGeneratedPopup") as HTMLDivElement;
+            const reportPopUpHandle = document.getElementById("reportGeneratedPopup") as HTMLDivElement;
             for (let i = 0; i < 100; i++) {
-                setTimeout((x) => { reportPopUpHandle.style.opacity = (i / 100).toString(); }, 10 * i, i);
+                setTimeout(() => { reportPopUpHandle.style.opacity = (i / 100).toString(); }, 10 * i, i);
             }
 
         } catch (error) {
@@ -143,9 +145,9 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
     }
 
     async function generateParams() {
-        let generatedIds = ["Performed by", "Country", "Site Number", "Subject Number"];
+        const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number"];
 
-        let searchOn: paramObject = {
+        const searchOn: paramObject = {
             "Performed by": "",
             "Country": "",
             "Site Number": "",
@@ -153,8 +155,8 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
         };
 
         generatedIds.forEach((id) => {
-            let select = document.getElementById(id + "List") as HTMLSelectElement;
-            let value = select.value;
+            const select = document.getElementById(id + "List") as HTMLSelectElement;
+            const value = select.value;
 
             searchOn[`${id}`] = value;
         })
@@ -167,45 +169,45 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     function generateControls() {
 
-        let neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number"];
-        let myHeaders = [];
+        const neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number"];
+        const myHeaders = [];
 
         for (let i = 0; i < neededHeaders.length; i++) {
-            let neededHeader = neededHeaders[i];
+            const neededHeader = neededHeaders[i];
             for (let j = 0; j < decodedHeaders.length; j++) {
-                let decodedHeader = decodedHeaders[j];
+                const decodedHeader = decodedHeaders[j];
                 if (decodedHeader.header == neededHeader) {
                     myHeaders.push(decodedHeader);
                 }
             }
         }
 
-        let generatedContentRoot = document.getElementById("generatedContentRoot");
-        generatedContentRoot!.innerHTML = "";
+        const generatedContentRoot = document.getElementById("generatedContentRoot") as HTMLDivElement;
+        generatedContentRoot.innerHTML = "";
 
-        let loadingMessageHandle = document.createElement("h1") as HTMLHeadingElement;
+        const loadingMessageHandle = document.createElement("h1") as HTMLHeadingElement;
         loadingMessageHandle.className = "text-2xl text-center";
         loadingMessageHandle.innerText = "Loading Data 🔁";
 
-        generatedContentRoot!.appendChild(loadingMessageHandle);
+        generatedContentRoot.appendChild(loadingMessageHandle);
 
         for (let i = 0; i < myHeaders.length; i++) {
-            let decodedHeader = myHeaders[i];
+            const decodedHeader = myHeaders[i];
 
-            let div = document.createElement("div");
+            const div = document.createElement("div");
             div.className = "m-3";
 
-            let p = document.createElement("p");
+            const p = document.createElement("p");
             p.className = "ml-5 text-2xl";
             p.innerText = decodedHeader.header + ":";
             div.appendChild(p);
 
-            let select = document.createElement("select");
+            const select = document.createElement("select");
             select.name = decodedHeader.header + "List";
             select.id = decodedHeader.header + "List";
             select.className = "mt-1 rounded w-60 text-black";
 
-            let blankOption = document.createElement("option")
+            const blankOption = document.createElement("option")
             blankOption.value = "";
             select.appendChild(blankOption);
 
@@ -219,15 +221,15 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                 }
 
 
-                let uniqueValue = decodedHeader.uniqueValues[j];
+                const uniqueValue = decodedHeader.uniqueValues[j];
 
-                let option = document.createElement("option");
+                const option = document.createElement("option");
                 option.value = uniqueValue;
                 option.innerText = uniqueValue;
                 select.appendChild(option);
             }
 
-            let resetButton = document.createElement("button");
+            const resetButton = document.createElement("button");
             resetButton.className = " rounded text-white block";
             resetButton.innerText = "Reset";
             resetButton.onclick = () => {
@@ -238,7 +240,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
             div.appendChild(select);
             div.appendChild(resetButton);
 
-            generatedContentRoot!.appendChild(div);
+            generatedContentRoot.appendChild(div);
 
         }
 
@@ -246,6 +248,8 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     return (
         <div className={styles.mainUiGrid}>
+            <div></div>
+
             <div>
                 <button
                     className={`
@@ -276,8 +280,9 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                 >Reset All Controls</button>
             </div>
 
-            <div></div>
-            <div></div>
+            <div />
+            <div />
+
             <div id="generatedContentRoot">
                 <h1 id="loadingMessage">Loading Data 🔁</h1>
                 {/* Template for html elements */}
@@ -294,7 +299,6 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
             <div />
             <div />
-
 
             <div className={`m-3 grid grid-rows-5 grid-cols-5`}>
                 <div>
@@ -319,21 +323,22 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
             </div>
 
-            <div>
-                <div className='mt-[80%] opacity-0' id="reportGeneratedPopup">
-                    <h1
-                        className={`
-                            text-center
-                        `}
-                    >Report Generated</h1>
-                    <h1
-                        className={`
-                            text-center
-                        `}
-                    >👇</h1>
-                </div>
+            <div />
+            <div />
 
+            <div className='opacity-0 text-4xl' id="reportGeneratedPopup">
+                <h1
+                    className={`
+                        text-center
+                    `}
+                >Report Generated</h1>
+                <h1
+                    className={`
+                        text-center
+                    `}
+                >👇</h1>
             </div>
+
 
             <div />
 

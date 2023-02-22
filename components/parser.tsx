@@ -18,18 +18,18 @@ interface paramObject {
 export function getDataFromHeader(cell: Cell, rows: Row[]): Cell[] {
 
     for (let i = 0; i < rows.length; i++) {
-        let row = rows[i];
-        let rowLength = row.length;
+        const row = rows[i];
+        const rowLength = row.length;
 
         for (let j = 0; j < rowLength; j++) {
-            let rowCell = row[j];
+            const rowCell = row[j];
 
             if (rowCell == cell) {
-                let data: Cell[] = [];
+                const data: Cell[] = [];
 
                 for (let k = 0; k < rows.length; k++) {
-                    let row = rows[k];
-                    let rowCell = row[j];
+                    const row = rows[k];
+                    const rowCell = row[j];
 
                     if (rowCell != null) {
                         data.push(rowCell);
@@ -48,18 +48,18 @@ export function getDataFromHeader(cell: Cell, rows: Row[]): Cell[] {
 export function getUniqueValuesFromHeader(cell: Cell, rows: Row[]): Cell[] {
 
     for (let i = 0; i < rows.length; i++) {
-        let row = rows[i];
-        let rowLength = row.length;
+        const row = rows[i];
+        const rowLength = row.length;
 
         for (let j = 0; j < rowLength; j++) {
-            let rowCell = row[j];
+            const rowCell = row[j];
 
             if (rowCell == cell) {
-                let uniqueValues: Cell[] = [];
+                const uniqueValues: Cell[] = [];
 
                 for (let k = 0; k < rows.length; k++) {
-                    let row = rows[k];
-                    let rowCell = row[j];
+                    const row = rows[k];
+                    const rowCell = row[j];
 
                     if (!uniqueValues.includes(rowCell) && rowCell != null) {
                         uniqueValues.push(rowCell);
@@ -74,16 +74,16 @@ export function getUniqueValuesFromHeader(cell: Cell, rows: Row[]): Cell[] {
     return [];
 }
 
-export function countRepeatedValues(colNumber: number, fileRows: Row[]): Object {
+export function countRepeatedValues(colNumber: number, fileRows: Row[]): { [key: string]: number } {
 
-    let count: any = {};
+    const count: any = {};
 
     for (let i = 0; i < fileRows.length; i++) {
-        let row = fileRows[i];
-        let rowLength = row.length;
+        const row = fileRows[i];
+        const rowLength = row.length;
 
         for (let j = 0; j < rowLength; j++) {
-            let rowCell = row[j] as string;
+            const rowCell = row[j] as string;
 
             if (j == colNumber) {
                 if (count[rowCell] == null) {
@@ -110,13 +110,7 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         "Overread Selection Reason": number;
     }
 
-
-    let finalReport: any = {
-        "finalRows": [],
-        "overreadRows": []
-    }
-
-    let paramLocations: paramLInterface = {
+    const paramLocations: paramLInterface = {
         "Performed by": 0,
         "Country": 0,
         "Site Number": 0,
@@ -125,14 +119,14 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         "Overread Selection Reason": 0
     }
 
-    let paramKeys = Object.keys(paramLocations);
+    const paramKeys = Object.keys(paramLocations);
 
     for (let i = 0; i < fileRows.length; i++) {
-        let row = fileRows[i];
-        let rowLength = row.length;
+        const row = fileRows[i];
+        const rowLength = row.length;
 
         for (let j = 0; j < rowLength; j++) {
-            let rowCell = row[j] as string;
+            const rowCell = row[j] as string;
 
             if (paramKeys.includes(rowCell)) {
                 paramLocations[rowCell] = j;
@@ -147,10 +141,10 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
     // console.log(paramLocations);
 
-    let userRows = [];
+    const userRows = [];
 
     for (let i = 0; i < fileRows.length; i++) {
-        let currentCell = fileRows[i][paramLocations["Performed by"]];
+        const currentCell = fileRows[i][paramLocations["Performed by"]];
 
         if (currentCell != null) {
             if (searchOn["Performed by"] != "") {
@@ -216,10 +210,10 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
     //     }
     // }
 
-    let siteNumberRows = [];
+    const siteNumberRows = [];
 
     for (let i = 0; i < userRows.length; i++) {
-        let currentCell = userRows[i][paramLocations["Site Number"]];
+        const currentCell = userRows[i][paramLocations["Site Number"]];
 
         if (currentCell != null) {
             if (searchOn["Site Number"] != "") {
@@ -236,10 +230,10 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         }
     }
 
-    let countryRows = [];
+    const countryRows = [];
 
     for (let i = 0; i < siteNumberRows.length; i++) {
-        let currentCell = siteNumberRows[i][paramLocations["Country"]];
+        const currentCell = siteNumberRows[i][paramLocations["Country"]];
 
         if (currentCell != null) {
             if (searchOn["Country"] != "") {
@@ -256,10 +250,10 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
         }
     }
 
-    let subjectNumberRows = [];
+    const subjectNumberRows = [];
 
     for (let i = 0; i < countryRows.length; i++) {
-        let currentCell = countryRows[i][paramLocations["Subject Number"]];
+        const currentCell = countryRows[i][paramLocations["Subject Number"]];
 
         if (currentCell != null) {
             if (searchOn["Subject Number"] != "") {
@@ -279,11 +273,11 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
 
 
-    let splitArray = [];
+    const splitArray = [];
 
     for (let i = 0; i < countryRows.length; i++) {
 
-        let currentCell = countryRows[i][paramLocations["Overread Selection Reason"]];
+        const currentCell = countryRows[i][paramLocations["Overread Selection Reason"]];
 
         if (currentCell != null) {
             splitArray.push(textCleaner(currentCell as string));
@@ -297,8 +291,8 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
     wordCountObject = createRepeatsObject(splitArray, wordCountObject);
 
     // Sort the object by count
-    let wordCountsSorted: Array<[string, number]> = [];
-    for (let word in wordCountObject) {
+    const wordCountsSorted: Array<[string, number]> = [];
+    for (const word in wordCountObject) {
         if (word === "" || word === " ") { continue; }
         wordCountsSorted.push([word, wordCountObject[word]]);
     }
@@ -328,12 +322,12 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
 
     csv += "\r\n".repeat(2);
-    associationArray.forEach((key: string, index: number) => {
+    associationArray.forEach((key: string) => {
         csv += `${key[0]}${delimiter}${key[1]}\n`;
     });
 
     csv += "\r\n".repeat(2);
-    wordCountsSorted.forEach((key, index) => {
+    wordCountsSorted.forEach((key) => {
         csv += `${key[0]}${delimiter}${key[1]}\n`;
     });
 
@@ -344,8 +338,8 @@ export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
 
 
 export function downloadFile(data: any, filename: string, type: string) {
-    let file = new Blob([data], { type: type });
-    let a = document.createElement("a"),
+    const file = new Blob([data], { type: type });
+    const a = document.createElement("a"),
         url = URL.createObjectURL(file);
     a.href = url;
     a.download = filename;

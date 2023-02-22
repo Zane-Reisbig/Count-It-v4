@@ -1,8 +1,10 @@
 .mainUiGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: min-content 1fr 1fr;
+  grid-template-rows: min-content 1fr 10em 10em;
   grid-gap: 10px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .reportOutput {

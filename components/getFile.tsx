@@ -1,6 +1,8 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
+import React from 'react'
+
 
 interface GetFileProps {
   fileOut: File;
@@ -70,7 +72,8 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
           <div
             onDrop={(e) => listFiles(e.dataTransfer.files, e)}
             onDragOver={(e) => e.preventDefault()}
-            onClick={(e) => document.getElementById('fileLabel')!.click()}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            onClick={() => document.getElementById('fileLabel')!.click()}
             className={`
               fileSelectButtonContainer
               
@@ -100,6 +103,7 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
               name="file"
               accept=".csv,.xlsx,.xls"
               onChange={(e) =>
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 listFiles(e.target.files!, e)
               }
             />

@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
-import { useState } from 'react'
 import Head from 'next/head'
 
+import React from 'react'
+import { useState } from 'react'
 
 import { GetFile } from '../components/getFile'
 import { FileHandler } from '../components/fileHandler'
@@ -21,9 +22,6 @@ const Home: NextPage = () => {
       {/* Typescript doesnt like the line above so we have to re-write it to be type safe */}
 
       {fileOut ? <FileHandler fileOut={fileOut} fileOutHandler={setFileOut} /> : <GetFile fileOut={fileOut} fileOutHandler={setFileOut} />}
-
-
-
 
     </>
 
