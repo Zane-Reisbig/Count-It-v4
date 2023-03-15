@@ -101,7 +101,7 @@ export function countRepeatedValues(colNumber: number, fileRows: Row[]): { [key:
 export function generateReport(searchOn: paramObject, fileRows: Row[]): object {
     interface paramLInterface {
         [key: string]: number;
-        "E Code"?: number;
+        "E Code": number;
         "Country": number;
         "Site Number": number;
         "Performed by": number;
