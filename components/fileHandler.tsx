@@ -20,7 +20,7 @@ interface paramObject {
     "Country": string;
     "Site Number": string;
     "Subject Number": string;
-    "E Code": string;
+    // "E Code": string;
 }
 
 export const FileHandler: NextPage<FileHandlerProps> = (props) => {
@@ -146,14 +146,15 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
     }
 
     async function generateParams() {
-        const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number", "E Code"];
+        // const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number", "E Code"];
+        const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number"];
 
         const searchOn: paramObject = {
             "Performed by": "",
             "Country": "",
             "Site Number": "",
             "Subject Number": "",
-            "E Code": ""
+            // "E Code": ""
         };
 
         generatedIds.forEach((id) => {
