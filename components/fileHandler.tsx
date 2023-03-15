@@ -20,6 +20,7 @@ interface paramObject {
     "Country": string;
     "Site Number": string;
     "Subject Number": string;
+    "E Code": string;
 }
 
 export const FileHandler: NextPage<FileHandlerProps> = (props) => {
@@ -139,26 +140,28 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
         } catch (error) {
             console.error("Failed to load report['csv']")
-            console.error(error);
+            console.error("React state is async so the error is caused by the state and await not actually working.")
         }
 
     }
 
     async function generateParams() {
-        const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number"];
+        const generatedIds = ["Performed by", "Country", "Site Number", "Subject Number", "E Code"];
 
         const searchOn: paramObject = {
             "Performed by": "",
             "Country": "",
             "Site Number": "",
-            "Subject Number": ""
+            "Subject Number": "",
+            "E Code": ""
         };
 
         generatedIds.forEach((id) => {
             const select = document.getElementById(id + "List") as HTMLSelectElement;
+            console.log(select);
             const value = select.value;
 
-            searchOn[`${id}`] = value;
+            searchOn[id] = value;
         })
 
         console.log(searchOn);
@@ -169,7 +172,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     function generateControls() {
 
-        const neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number"];
+        const neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number", "E Code"];
         const myHeaders = [];
 
         for (let i = 0; i < neededHeaders.length; i++) {
@@ -248,7 +251,22 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
     return (
         <div className={styles.mainUiGrid}>
-            <div></div>
+            <div id="updateNotes" >
+                <h1 className={`text-2xl text-center`}>Update Notes</h1>
+                <p>Last Update: 02/23/2023</p>
+                <ul>
+                    <li>- Compatibility for {"E Code"}<br />{"Patient Number"} ambiguity</li>
+                    <li>- Excel formatting compatibility </li>
+                </ul>
+
+                <br />
+                <br />
+
+                <h1 className={`text-center text-2xl`}>Future:</h1>
+                <ul>
+                    <li>- Hot Reload for param boxes</li>
+                </ul>
+            </div>
 
             <div>
                 <button
