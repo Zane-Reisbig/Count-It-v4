@@ -16,11 +16,17 @@ interface FileHandlerProps {
 
 interface paramObject {
     [key: string]: string;
+
     "Performed by": string;
+
     "Country": string;
+
     "Site Number": string;
+    "Site ID": string;
+
     "Subject Number": string;
-    // "E Code": string;
+    "Patient Number": string;
+    "E Code": string;
 }
 
 export const FileHandler: NextPage<FileHandlerProps> = (props) => {
@@ -151,29 +157,52 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
         const searchOn: paramObject = {
             "Performed by": "",
+
             "Country": "",
+
             "Site Number": "",
+            "Site ID": "",
+
             "Subject Number": "",
-            // "E Code": ""
+            "Patient Number": "",
+            "E Code": ""
         };
 
-        generatedIds.forEach((id) => {
-            const select = document.getElementById(id + "List") as HTMLSelectElement;
-            console.log(select);
-            const value = select.value;
+        let curId = "";
 
-            searchOn[id] = value;
-        })
+        try {
+            generatedIds.forEach((id) => {
+                const select = document.getElementById(id + "List") as HTMLSelectElement;
+                const value = select.value;
+                curId = id;
+                console.log(select);
 
+                searchOn[id] = value;
+            })
+        }
+        catch (error) {
+            console.error(`Failed to get value from ${curId}List`)
+        }
         console.log(searchOn);
-
         await setCurrentReport([generateReport(searchOn, fileRows)]);
 
     }
 
     function generateControls() {
 
-        const neededHeaders = ["Performed by", "Country", "Site Number", "Subject Number", "E Code"];
+        const neededHeaders = [
+            "Performed by",
+
+            "Country",
+
+            "Site Number",
+            "Site ID",
+
+            "Subject Number",
+            "Patient Number",
+            "E Code"
+
+        ];
         const myHeaders = [];
 
         for (let i = 0; i < neededHeaders.length; i++) {

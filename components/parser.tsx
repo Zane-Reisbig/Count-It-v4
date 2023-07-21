@@ -8,9 +8,15 @@ interface paramObject {
     [key: string]: string;
 
     "Performed by": string;
+
     "Country": string;
+
     "Site Number": string;
+    "Site ID": string;
+
     "Subject Number": string;
+    "Patient Number": string;
+    "E Code": string;
 }
 
 
