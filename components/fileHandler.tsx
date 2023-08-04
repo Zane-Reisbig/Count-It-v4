@@ -159,8 +159,14 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
 
         generatedIds.forEach((id) => {
             const select = document.getElementById(id + "List") as HTMLSelectElement;
+            let value = "";
             console.log(select);
-            const value = select.value;
+            try {
+                value = select.value;
+            } catch (error) {
+                console.error("Failed to get value from select element");
+            }
+
 
             searchOn[id] = value;
         })
