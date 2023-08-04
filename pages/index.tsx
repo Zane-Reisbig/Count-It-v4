@@ -1,11 +1,18 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import { useState } from 'react'
 
 import { GetFile } from '../components/getFile'
-import { FileHandler } from '../components/fileHandler'
+import HotReloader from '../components/hotReloadFileHandler'
+// import { FileHandler } from '../components/fileHandler'
+
+type fileRow = Array<Array<any>>;
+interface HotReloaderProps {
+  testObj: fileRow;
+  localDBInstance: any;
+}
 
 const Home: NextPage = () => {
   const [fileOut, setFileOut] = useState<any>();
@@ -17,12 +24,7 @@ const Home: NextPage = () => {
         <title>Count It! v4.0</title>
         <link rel="icon" href="favicon.ico" />
       </Head>
-      {fileOut ?
-        <FileHandler fileOut={fileOut} fileOutHandler={setFileOut} />
-        :
-        <GetFile fileOut={fileOut} fileOutHandler={setFileOut} />
-      }
-
+      <HotReloader testObj={[]} localDBInstance={undefined} />
     </>
 
   )

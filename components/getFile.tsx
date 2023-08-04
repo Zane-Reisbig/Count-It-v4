@@ -72,8 +72,7 @@ export const GetFile: NextPage<GetFileProps> = (props) => {
           <div
             onDrop={(e) => listFiles(e.dataTransfer.files, e)}
             onDragOver={(e) => e.preventDefault()}
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            onClick={() => document.getElementById('fileLabel')!.click()}
+            onClick={() => document.getElementById('fileLabel').click()}
             className={`
               fileSelectButtonContainer
               

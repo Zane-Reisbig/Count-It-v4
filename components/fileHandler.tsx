@@ -43,6 +43,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
         // It reads the data from the fileOut provided via props and sets the read data in the state variable fileRows.
         const reader = async () => await readXlsxFile(props.fileOut)
             .then(async (rows) => {
+                console.log(rows);
                 await setFileRows(rows);
             })
         reader();
