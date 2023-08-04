@@ -260,7 +260,13 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
         <div className={styles.mainUiGrid}>
             <div id="updateNotes" >
                 <h1 className={`text-2xl text-center`}>Update Notes</h1>
-                <p>Last Update: 02/23/2023</p>
+                {
+                    <><p>Last Update: 08/04/2023</p><ul>
+                        <li>Reverted Changes for temp fix</li>
+                    </ul></>
+                }
+
+                {/* <p>Last Update: 02/23/2023</p>
                 <ul>
                     <li>- Compatibility for {"E Code"}<br />{"Patient Number"} ambiguity</li>
                     <li>- Excel formatting compatibility </li>
@@ -272,7 +278,7 @@ export const FileHandler: NextPage<FileHandlerProps> = (props) => {
                 <h1 className={`text-center text-2xl`}>Future:</h1>
                 <ul>
                     <li>- Hot Reload for param boxes</li>
-                </ul>
+                </ul> */}
             </div>
 
             <div>
